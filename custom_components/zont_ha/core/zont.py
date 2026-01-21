@@ -170,12 +170,45 @@ class Zont:
             triggered=boiler.active,
         ))
 
+    @staticmethod
+    def _create_boiler_target_temp_sensor(boiler: CircuitZONT,
+                                           device: DeviceZONT):
+        """
+        Создает сенсор, отражающий целевую
+        или рассчитанную температуру для контура котла.
+        """
+        device.sensors.append(SensorZONT(
+            id=f'{boiler.id}_boiler_target_temp',
+            name=f'{boiler.name}_целевая_температура',
+            type=TypeOfSensor.TEMPERATURE,
+            status=StateOfSensor.OK,
+            value=boiler.target_temp,
+            unit='ºC'
+        ))
+
+    @staticmethod
+    def _create_boiler_actual_temp_sensor(boiler: CircuitZONT,
+                                           device: DeviceZONT):
+        """
+        Создает сенсор, отражающий актуальную температуру для контура котла.
+        """
+        device.sensors.append(SensorZONT(
+            id=f'{boiler.id}_boiler_actual_temp',
+            name=f'{boiler.name}_актуальная_температура',
+            type=TypeOfSensor.TEMPERATURE,
+            status=StateOfSensor.OK,
+            value=boiler.actual_temp,
+            unit='ºC'
+        ))
+
     def _create_sensors_of_boiler(self, device: DeviceZONT):
         """Создаёт дополнительные сенсоры котла"""
         for circuit in device.circuits:
             if circuit.type == TypeOfCircuit.BOILER:
                 self._create_boiler_error_sensor(circuit, device)
                 self._create_boiler_active_sensor(circuit, device)
+                self._create_boiler_target_temp_sensor(circuit, device)
+                self._create_boiler_actual_temp_sensor(circuit, device)
 
     def get_device(self, device_id: int) -> DeviceZONT | None:
         """Получить устройство по его id"""
