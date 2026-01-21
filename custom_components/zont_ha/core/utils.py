@@ -64,13 +64,13 @@ def check_send_command(func):
                 )
             elif data.get('error') == 'timeout':
                 _LOGGER.info(
-                    f'Timeout. На устройстве {device.model}-{device.name} '
+                    f'Timeout. На устройстве {device.device_info.model}-{device.name} '
                     f'установка параметра ({name}: {set_value}) '
                     f'возможно не прошла.'
                 )
             else:
                 raise ResponseZontError(
-                    f'Ошибка устройства {device.model}-{device.name}: '
+                    f'Ошибка устройства {device.device_info.model}-{device.name}: '
                     f'{data.get("error_ui")}'
                 )
         else:
