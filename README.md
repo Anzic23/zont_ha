@@ -1,7 +1,7 @@
 ## ZONT для Home Assistant
 
-![python version](https://img.shields.io/badge/Python-3.12-yellowgreen?style=plastic&logo=python)
-![pydantic version](https://img.shields.io/badge/pydantic-ha-yellowgreen?style=plastic&logo=fastapi)
+![python version](https://img.shields.io/badge/Python-3.14-yellowgreen?style=plastic&logo=python)
+![pydantic version](https://img.shields.io/badge/pydantic-v2-yellowgreen?style=plastic&logo=fastapi)
 ![aiohttp version](https://img.shields.io/badge/aiohttp-ha-yellowgreen?style=plastic)
 ![Home Assistant](https://img.shields.io/badge/HomeAssistant-latest-yellowgreen?style=plastic&logo=homeassistant)
 
