@@ -9,9 +9,9 @@ DOMAIN = 'zont_ha'
 MANUFACTURER = 'MicroLine''ab-log'
 ENTRIES = 'entries'
 CURRENT_ENTITY_IDS = 'current_entity_ids'
-CONFIGURATION_URL = 'https://my.zont.online/'
+CONFIGURATION_URL = 'https://lk.zont-online.ru/'
 
-ZONT_API_URL_ROOT = 'https://my.zont.online/api/'
+ZONT_API_URL_ROOT = CONFIGURATION_URL + 'api/'
 ZONT_API_URL = ZONT_API_URL_ROOT + 'widget/v3/'
 
 URL_GET_DEVICES_OLD = ZONT_API_URL_ROOT + 'devices'
