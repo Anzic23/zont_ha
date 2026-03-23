@@ -20,6 +20,7 @@ def check_send_command(func):
     управления параметрами контроллера zont.
     """
     async def check_response(*args, **kwargs):
+        print(kwargs)
         device: DeviceZONT = kwargs.get('device')
         circuit = kwargs.get('circuit')
         heating_mode = kwargs.get('heating_mode')
@@ -30,6 +31,7 @@ def check_send_command(func):
         command = kwargs.get('command')
 
         if target_temp is not None:
+            print('target_temp', target_temp)
             control = circuit
             set_value = target_temp
         elif button is not None:
@@ -39,11 +41,14 @@ def check_send_command(func):
             control = guard_zone
             set_value = command
         elif heating_mode is not None:
+            print('heating_mode', heating_mode)
             control = heating_mode
             set_value = 'Установлен во всех контурах'
         else:
             keys = list(kwargs.keys())
+            print('keys', keys)
             control = kwargs[keys[1]]
+            print('control', control)
             set_value = kwargs[keys[2]]
             _LOGGER.warning(f'Параметр "{control}" не найдет. Отправлен общий запрос.')
 
