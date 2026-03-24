@@ -19,7 +19,6 @@ def check_send_command(func):
     управления параметрами контроллера zont.
     """
     async def check_response(self, *args, **kwargs):
-        print(kwargs.keys())
         device: DeviceZONT = kwargs.get('device')
         circuit = kwargs.get('circuit')
         heating_mode = kwargs.get('heating_mode')
@@ -141,4 +140,3 @@ def is_binary_sensor(sensor: SensorZONT) -> bool:
     if sensor.type.value in BINARY_SENSOR_TYPES:
         return True
     return False
-
