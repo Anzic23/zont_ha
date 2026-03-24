@@ -166,7 +166,10 @@ class ZontClimateEntity(CoordinatorEntity, ClimateEntity):
                 )
             else:
                 await self._zont.set_heating_mode_v1(
-                    self._device, self._circuit, heating_mode.id)
+                    device=self._device,
+                    circuit=self._circuit,
+                    heating_mode_id=heating_mode.id
+                )
         else:
             await self._zont.set_target_temperature(
                 device=self._device,

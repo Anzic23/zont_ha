@@ -386,11 +386,13 @@ class Zont:
             headers=self.headers
         )
 
+    @check_send_command
     async def set_heating_mode_v1(
             self, device: DeviceZONT, circuit: CircuitZONT,
             heating_mode_id: int
     ) -> ClientResponse:
         """Отправка команды на установку нужного режима для контура."""
+        _LOGGER.debug(f'Sending command to API v1 for {device.name}')
         response = await self.session.post(
             url=URL_SEND_COMMAND_ZONT_OLD,
             json={

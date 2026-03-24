@@ -3,7 +3,6 @@ from http import HTTPStatus
 
 from aiohttp import ClientResponse
 
-from .enums import TypeOfSensor
 from .exceptions import ResponseZontError
 from .models_zont_v3 import SensorZONT, DeviceZONT
 from ..const import (
@@ -19,11 +18,12 @@ def check_send_command(func):
     Декоратор для проверки успешной отправки команды
     управления параметрами контроллера zont.
     """
-    async def check_response(*args, **kwargs):
-        print(kwargs)
+    async def check_response(self, *args, **kwargs):
+        print(kwargs.keys())
         device: DeviceZONT = kwargs.get('device')
         circuit = kwargs.get('circuit')
         heating_mode = kwargs.get('heating_mode')
+        heating_mode_id = kwargs.get('heating_mode_id')
         target_temp = kwargs.get('target_temp')
         guard_zone = kwargs.get('guard_zone')
         button = kwargs.get('button')
@@ -31,7 +31,6 @@ def check_send_command(func):
         command = kwargs.get('command')
 
         if target_temp is not None:
-            print('target_temp', target_temp)
             control = circuit
             set_value = target_temp
         elif button is not None:
@@ -41,14 +40,15 @@ def check_send_command(func):
             control = guard_zone
             set_value = command
         elif heating_mode is not None:
-            print('heating_mode', heating_mode)
             control = heating_mode
             set_value = 'Установлен во всех контурах'
+        elif heating_mode_id is not None:
+            control = circuit
+            heating_mode = self.get_heating_mode_by_id(device, heating_mode_id)
+            set_value = heating_mode.name
         else:
             keys = list(kwargs.keys())
-            print('keys', keys)
             control = kwargs[keys[1]]
-            print('control', control)
             set_value = kwargs[keys[2]]
             _LOGGER.warning(f'Параметр "{control}" не найдет. Отправлен общий запрос.')
 
@@ -57,7 +57,7 @@ def check_send_command(func):
         else:
             name = control.name.name
 
-        response: ClientResponse = await func(*args, **kwargs)
+        response: ClientResponse = await func(self, *args, **kwargs)
         status = response.status
         data = await response.json()
         if status == HTTPStatus.OK:
@@ -139,8 +139,6 @@ def validate_value_sensor(
 
 def is_binary_sensor(sensor: SensorZONT) -> bool:
     if sensor.type.value in BINARY_SENSOR_TYPES:
-        return True
-    if sensor.type == TypeOfSensor.OTHER and sensor.triggered is not None:
         return True
     return False
 
