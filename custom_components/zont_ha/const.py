@@ -14,6 +14,7 @@ ZONT_API_URLS = [
     'https://my.zont.online/',
     'https://lk.zont-online.ru/',
     'https://lk.zont-online.ru/',
+    'https://zont-online.com',
 ]
 
 ZONT_API_URL_ROOT = 'api/'
