@@ -13,6 +13,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .const import DOMAIN, URL_TOKEN, URL_GET_DEVICES
 from .core.exceptions import RequestAPIZONTError, InvalidMail
 from .core.models_zont_v3 import TokenZont, ErrorZont, DeviceZONT, AccountZont
+from .core.zont_request import ZontRequestManager
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -29,6 +30,7 @@ async def get_token(
         hass: HomeAssistant, mail: str, login: str, password: str
 ) -> str:
     session = async_get_clientsession(hass)
+    manager = ZontRequestManager(session)
     encoded = f'{login}:{password}'.encode("utf-8")
     basic = base64.b64encode(encoded).decode()
     headers = {
@@ -36,8 +38,9 @@ async def get_token(
         'X-ZONT-Client': mail,
         'Content-Type': 'application/json'
     }
-    response = await session.post(
-        url=URL_TOKEN,
+    response = await manager.request(
+        method='POST',
+        path=URL_TOKEN,
         json={'client_name': 'Home Assistant'},
         headers=headers
     )
@@ -55,15 +58,16 @@ async def validate_auth_token(
         hass: HomeAssistant, mail: str, token: str
 ) -> dict[str, str]:
     """Валидация токена zont"""
-
     session = async_get_clientsession(hass)
+    manager = ZontRequestManager(session)
     headers = {
         'X-ZONT-Token': token,
         'X-ZONT-Client': mail,
         'Content-Type': 'application/json'
     }
-    response = await session.get(
-        url=URL_GET_DEVICES,
+    response = await manager.request(
+        method='GET',
+        path=URL_GET_DEVICES,
         headers=headers
     )
     text = await response.text()

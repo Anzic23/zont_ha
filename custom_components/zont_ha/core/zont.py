@@ -21,6 +21,7 @@ from .models_zont_v3 import (
     ToggleButtonsZONT, ButtonZONT
 )
 from .utils import check_send_command
+from .zont_request import ZontRequestManager
 from ..const import (
     URL_GET_DEVICES, URL_SEND_COMMAND_ZONT_OLD,
     MIN_TEMP_AIR, MAX_TEMP_AIR, MIN_TEMP_GVS, MAX_TEMP_GVS, MIN_TEMP_FLOOR,
@@ -65,14 +66,15 @@ class Zont:
         self.selected_devices = selected_devices
         self.mail = mail
         self.session = async_get_clientsession(hass)
+        self.manager = ZontRequestManager(self.session)
         _LOGGER.debug(f'Создан объект Zont')
 
     async def init_old_data(self):
         """Инициализирует данные из API V1"""
-        headers = self.headers
-        response = await self.session.post(
-            url=URL_GET_DEVICES_OLD,
-            headers=headers
+        response = await self.manager.request(
+            method='POST',
+            path=URL_GET_DEVICES_OLD,
+            headers=self.headers
         )
         text = await response.text()
         status_code = response.status
@@ -85,10 +87,10 @@ class Zont:
 
     async def get_update(self):
         """Получаем обновление данных Zont"""
-        headers = self.headers
-        response = await self.session.get(
-            url=URL_GET_DEVICES,
-            headers=headers
+        response = await self.manager.request(
+            method='GET',
+            path=URL_GET_DEVICES,
+            headers=self.headers
         )
         text = await response.text()
         status_code = response.status
@@ -366,9 +368,10 @@ class Zont:
     ) -> ClientResponse:
         """Отправка команды на установку нужной температуры в контуре."""
         _LOGGER.info(f'Отправлена уставка температуры на {target_temp}')
-        return await self.session.post(
-            url=f'{ZONT_API_URL}devices/{device.id}/circuits/'
-                f'{circuit.id}/actions/target-temp',
+        return await self.manager.request(
+            method='POST',
+            path=f'{ZONT_API_URL}devices/{device.id}/circuits/'
+                 f'{circuit.id}/actions/target-temp',
             json={'target_temp': target_temp},
             headers=self.headers
         )
@@ -379,9 +382,10 @@ class Zont:
             heating_mode_id: int
     ) -> ClientResponse:
         """Отправка команды на установку нужного режима для контура."""
-        return await self.session.post(
-            url=f'{ZONT_API_URL}devices/{device.id}/modes/'
-                f'{heating_mode_id}/actions/activate',
+        return await self.manager.request(
+            method='POST',
+            path=f'{ZONT_API_URL}devices/{device.id}/modes/'
+                 f'{heating_mode_id}/actions/activate',
             json={'circuit_id': circuit.id},
             headers=self.headers
         )
@@ -393,8 +397,9 @@ class Zont:
     ) -> ClientResponse:
         """Отправка команды на установку нужного режима для контура."""
         _LOGGER.debug(f'Sending command to API v1 for {device.name}')
-        response = await self.session.post(
-            url=URL_SEND_COMMAND_ZONT_OLD,
+        response = await self.manager.request(
+            method='POST',
+            path=URL_SEND_COMMAND_ZONT_OLD,
             json={
                 'device_id': device.id,
                 'command_name': 'SelectHeatingModeForCircuit',
@@ -413,8 +418,9 @@ class Zont:
             self, device: DeviceZONT, heating_mode: HeatingModeZONT
     ) -> ClientResponse:
         """Отправка команды на установку нужного режима для всех контуров."""
-        return await self.session.post(
-            url=f'{ZONT_API_URL}devices/{device.id}/modes/'
+        return await self.manager.request(
+            method='POST',
+            path=f'{ZONT_API_URL}devices/{device.id}/modes/'
                 f'{heating_mode.id}/actions/activate',
             headers=self.headers
         )
@@ -426,9 +432,10 @@ class Zont:
             command: bool,
     ) -> ClientResponse:
         """Отправка команды на установку нужной температуры в контуре."""
-        return await self.session.post(
-            url=f'{ZONT_API_URL}devices/{device.id}/controls/'
-                f'{button.id}/actions/trigger',
+        return await self.manager.request(
+            method='POST',
+            path=f'{ZONT_API_URL}devices/{device.id}/controls/'
+                 f'{button.id}/actions/trigger',
             json={'target_state': command},
             headers=self.headers
         )
@@ -439,9 +446,10 @@ class Zont:
             command: bool
     ) -> ClientResponse:
         """Отправка команды на изменение состояния охранной зоны."""
-        return await self.session.post(
-            url=f'{ZONT_API_URL}devices/{device.id}/guard-zones/'
-                f'{guard_zone.id}/actions/activate',
+        return await self.manager.request(
+            method='POST',
+            path=f'{ZONT_API_URL}devices/{device.id}/guard-zones/'
+                 f'{guard_zone.id}/actions/activate',
             json={
                 'zone_id': guard_zone.id,
                 'enable': command

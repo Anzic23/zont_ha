@@ -6,12 +6,17 @@ from homeassistant.const import (
 )
 
 DOMAIN = 'zont_ha'
-MANUFACTURER = 'MicroLine''ab-log'
+MANUFACTURER = 'MicroLine'
 ENTRIES = 'entries'
 CURRENT_ENTITY_IDS = 'current_entity_ids'
-CONFIGURATION_URL = 'https://lk.zont-online.ru/'
 
-ZONT_API_URL_ROOT = CONFIGURATION_URL + 'api/'
+ZONT_API_URLS = [
+    'https://my.zont.online/',
+    'https://lk.zont-online.ru/',
+    'https://lk.zont-online.ru/',
+]
+
+ZONT_API_URL_ROOT = 'api/'
 ZONT_API_URL = ZONT_API_URL_ROOT + 'widget/v3/'
 
 URL_GET_DEVICES_OLD = ZONT_API_URL_ROOT + 'devices'

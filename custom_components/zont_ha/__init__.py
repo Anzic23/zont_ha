@@ -14,9 +14,8 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator, UpdateFailed
 )
 from .const import (
-    DOMAIN, PLATFORMS, TIME_UPDATE, MANUFACTURER,
-    CONFIGURATION_URL, COUNTER_CONNECT, TIME_OUT_UPDATE_DATA, ENTRIES,
-    CURRENT_ENTITY_IDS
+    DOMAIN, PLATFORMS, TIME_UPDATE, MANUFACTURER, COUNTER_CONNECT,
+    TIME_OUT_UPDATE_DATA, ENTRIES, CURRENT_ENTITY_IDS
 )
 from .core.models_zont_v3 import DeviceZONT
 from .core.models_zont_webhook import DeviceEventWebhook, EventZONT
@@ -193,7 +192,7 @@ class ZontCoordinator(DataUpdateCoordinator):
             "sw_version": device.device_info.version.software,
             "hw_version": device.device_info.version.hardware,
             "serial_number": device.device_info.serial,
-            "configuration_url": CONFIGURATION_URL,
+            "configuration_url": self.zont.manager._last_base_url,
             "model": device.device_info.model,
             "manufacturer": MANUFACTURER,
         })
