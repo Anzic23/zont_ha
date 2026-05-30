@@ -11,7 +11,7 @@ class Coordinates(BaseModel):
 class AdditionalInfo(BaseModel):
     """Дополнительная информация объекта."""
 
-    object_id: str | int
+    object_id: str | int | None = None
 
 
 class DeviceEventWebhook(BaseModel):
