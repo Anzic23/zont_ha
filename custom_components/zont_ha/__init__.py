@@ -147,12 +147,14 @@ async def handle_webhook(
                           f'Body: {pretty_json}')
             await coordinator.async_request_refresh()
 
-            # target_temp обновляется на ZONT с задержкой после смены
-            # режима, поэтому первый опрос ловит старую уставку. Добираем
-            # настоявшееся состояние повторным опросом.
+            # target_temp обновляется в read-API ZONT с задержкой
+            # (~10с, eventual consistency) после смены режима, поэтому
+            # первый опрос ловит старую уставку. Добираем настоявшееся
+            # состояние несколькими повторными опросами.
             async def _resync():
-                await asyncio.sleep(4)
-                await coordinator.async_request_refresh()
+                for delay in (6, 8):
+                    await asyncio.sleep(delay)
+                    await coordinator.async_request_refresh()
 
             hass.async_create_task(_resync())
     except ValueError:
