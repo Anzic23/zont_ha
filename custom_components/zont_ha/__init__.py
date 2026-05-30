@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 from datetime import timedelta
@@ -145,6 +146,15 @@ async def handle_webhook(
                           f'Device id: {webhook_id}. '
                           f'Body: {pretty_json}')
             await coordinator.async_request_refresh()
+
+            # target_temp обновляется на ZONT с задержкой после смены
+            # режима, поэтому первый опрос ловит старую уставку. Добираем
+            # настоявшееся состояние повторным опросом.
+            async def _resync():
+                await asyncio.sleep(4)
+                await coordinator.async_request_refresh()
+
+            hass.async_create_task(_resync())
     except ValueError:
         _LOGGER.warning(f'Wrong webhook request. Webhook id: {webhook_id}. '
                         f'Body: {body}')
