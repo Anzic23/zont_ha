@@ -26,6 +26,7 @@ from ..const import (
     URL_GET_DEVICES, URL_SEND_COMMAND_ZONT_OLD,
     MIN_TEMP_AIR, MAX_TEMP_AIR, MIN_TEMP_GVS, MAX_TEMP_GVS, MIN_TEMP_FLOOR,
     MAX_TEMP_FLOOR, MATCHES_GVS, MATCHES_FLOOR,
+    MIN_TEMP_HEATING, MAX_TEMP_HEATING, MATCHES_HEATING,
     BINARY_SENSOR_TYPES, URL_GET_DEVICES_OLD, NO_ERROR,
     ZONT_API_URL,
 )
@@ -346,6 +347,8 @@ class Zont:
             val_min, val_max = MIN_TEMP_GVS, MAX_TEMP_GVS
         elif any([x in circuit_name for x in MATCHES_FLOOR]):
             val_min, val_max = MIN_TEMP_FLOOR, MAX_TEMP_FLOOR
+        elif any([x in circuit_name for x in MATCHES_HEATING]):
+            val_min, val_max = MIN_TEMP_HEATING, MAX_TEMP_HEATING
         return val_min, val_max
 
     def get_status_control(
@@ -386,7 +389,7 @@ class Zont:
             method='POST',
             path=f'{ZONT_API_URL}devices/{device.id}/modes/'
                  f'{heating_mode_id}/actions/activate',
-            json={'circuit_id': circuit.id},
+            json={'circuit_ids': [circuit.id]},
             headers=self.headers
         )
 
@@ -422,6 +425,7 @@ class Zont:
             method='POST',
             path=f'{ZONT_API_URL}devices/{device.id}/modes/'
                 f'{heating_mode.id}/actions/activate',
+            json={},
             headers=self.headers
         )
 
